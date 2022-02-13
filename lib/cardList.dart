@@ -52,19 +52,13 @@ class _CardListState extends State<CardList> {
                 ),
               ],
             ),
-            // TextButton.icon(
-            //   onPressed: widget.deleteFunction,
-            //   icon: Icon(Icons.delete),
-            //   label: Text(''),
-            //   style: TextButton.styleFrom(primary: Colors.red),
-            // ),
             MouseRegion(
               cursor: SystemMouseCursors.click,
               child: GestureDetector(
                 onTap: widget.deleteFunction,
                 child: Icon(Icons.delete, color: Colors.red),
               ),
-            )
+            ),
           ],
         ),
       ),

@@ -17,19 +17,9 @@ class _MyAppState extends State<MyApp> {
     Data(item: 'Mobile', price: 10000, date: 'Feb 10,2021'),
     Data(item: 'Shirts', price: 400, date: 'Feb 12,2020'),
     Data(item: 'Laptop', price: 49999, date: 'Jan 05,2020'),
-    Data(item: 'Laptop', price: 49999, date: 'Jan 05,2020'),
-    Data(item: 'Laptop', price: 49999, date: 'Jan 05,2020'),
-    Data(item: 'Laptop', price: 49999, date: 'Jan 05,2020'),
-    Data(item: 'Laptop', price: 49999, date: 'Jan 05,2020'),
-    Data(item: 'Laptop', price: 49999, date: 'Jan 05,2020'),
-    Data(item: 'Laptop', price: 49999, date: 'Jan 05,2020'),
-    Data(item: 'Laptop', price: 49999, date: 'Jan 05,2020')
+    
   ];
-  void delete(String item, double price, String date) {
-    dataList.removeWhere((element) =>
-        element.item == item && element.price == price && element.date == date);
-    setState(() {});
-  }
+ 
 
   @override
   Widget build(BuildContext context) {
