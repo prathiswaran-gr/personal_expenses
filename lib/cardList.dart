@@ -14,52 +14,44 @@ class _CardListState extends State<CardList> {
   @override
   Widget build(BuildContext context) {
     return Card(
+      elevation: 5.0,
       margin: EdgeInsets.all(10),
       child: Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  backgroundColor: Colors.purple,
-                  child: Text(
-                    '₹' + widget.data.price.toString(),
-                    style: TextStyle(color: Colors.white),
-                  ),
-                  radius: 30,
-                ),
-                SizedBox(width: 20),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      widget.data.item,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    SizedBox(height: 7),
-                    Text(
-                      widget.data.date,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: Colors.grey,
-                      ),
-                    )
-                  ],
-                ),
-              ],
+        padding: const EdgeInsets.all(5.0),
+        child: ListTile(
+          leading: CircleAvatar(
+            backgroundColor: Colors.purple,
+            child: Text(
+              '₹' + widget.data.price.toString(),
+              style: const TextStyle(color: Colors.white),
             ),
-            MouseRegion(
-              cursor: SystemMouseCursors.click,
-              child: GestureDetector(
-                onTap: widget.deleteFunction,
-                child: Icon(Icons.delete, color: Colors.red),
+            radius: 30,
+          ),
+          title: Text(
+            widget.data.item,
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
+              fontSize: 17,
+            ),
+          ),
+          subtitle: Text(
+            widget.data.date,
+            style: const TextStyle(
+              fontWeight: FontWeight.w600,
+              color: Colors.grey,
+              fontSize: 12,
+            ),
+          ),
+          trailing: MouseRegion(
+            cursor: SystemMouseCursors.click,
+            child: GestureDetector(
+              onTap: widget.deleteFunction,
+              child: const Icon(
+                Icons.delete,
+                color: Colors.red,
               ),
             ),
-          ],
+          ),
         ),
       ),
     );
