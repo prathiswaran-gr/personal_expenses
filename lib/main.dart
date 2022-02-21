@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:personal_expenses_app/barChart.dart';
-import 'package:personal_expenses_app/expenseCard.dart';
+
+import 'barChart.dart';
+import 'expenseCard.dart';
 
 void main() => runApp(const MyApp());
 
@@ -13,18 +14,38 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   Map<String, Map<String, dynamic>> expense = {
-    'Mobile': {'price': 9999, 'date': DateTime(2021, 2, 14)},
-    'Note Books': {'price': 99, 'date': DateTime(2021, 2, 15)},
-    'Stationary items': {'price': 250, 'date': DateTime(2022, 1, 31)},
-    'Bag': {'price': 499, 'date': DateTime(2022, 2, 18)},
-    'Post covers': {'price': 10, 'date': DateTime(2022, 1, 04)},
-    'A4 Sheets': {'price': 249, 'date': DateTime(2022, 1, 23)},
-    'Watch': {'price': 99, 'date': DateTime(2022, 1, 11)},
-    'Shirts': {'price': 412, 'date': DateTime(2022, 1, 21)},
-    'Sun Glass': {'price': 80, 'date': DateTime(2022, 1, 1)}
+    'Mobile': {'name': 'Mobile', 'price': 9999, 'date': DateTime(2021, 2, 14)},
+    'Note Books': {
+      'name': 'Note Books',
+      'price': 99,
+      'date': DateTime(2021, 2, 15)
+    },
+    'Stationary ': {
+      'name': 'Stationary items',
+      'price': 250,
+      'date': DateTime(2022, 1, 31)
+    },
+    'Bag': {'name': 'Bag', 'price': 499, 'date': DateTime(2022, 2, 18)},
+    'Post covers': {
+      'name': 'Post covers',
+      'price': 10,
+      'date': DateTime(2022, 1, 04)
+    },
+    'A4 Sheets': {
+      'name': 'A4 Sheets',
+      'price': 249,
+      'date': DateTime(2022, 1, 23)
+    },
+    'Watch': {'name': 'Watch', 'price': 99, 'date': DateTime(2022, 1, 11)},
+    'Shirts': {'name': 'Shirts', 'price': 412, 'date': DateTime(2022, 1, 21)},
+    'Sun Glass': {
+      'name': 'Sun Glass',
+      'price': 80,
+      'date': DateTime(2022, 1, 1)
+    }
   };
 
-  List<String> dropdownOptions = ['entry', 'price', 'date'];
+  List<String> dropdownOptions = ['entry', 'name', 'price', 'date'];
   String dropdownValue = 'entry';
   @override
   Widget build(BuildContext context) {
@@ -42,7 +63,10 @@ class _MyAppState extends State<MyApp> {
                   items: dropdownOptions.map((value) {
                     return DropdownMenuItem(
                       value: value,
-                      child: Text(value),
+                      child: Text(
+                        value,
+                        style: TextStyle(color: Colors.white),
+                      ),
                     );
                   }).toList(),
                   icon: const Icon(Icons.filter_list_sharp),
@@ -52,6 +76,7 @@ class _MyAppState extends State<MyApp> {
                     });
                   },
                   iconEnabledColor: Colors.white,
+                  dropdownColor: Colors.purple,
                 ),
               ),
             ],
