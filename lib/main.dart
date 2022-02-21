@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import './data.dart';
-import './cardList.dart';
+import 'package:personal_expenses_app/barChart.dart';
+import 'package:personal_expenses_app/expenseCard.dart';
 
-main() {
-  runApp(const MyApp());
-}
+void main() => runApp(const MyApp());
 
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -14,59 +12,115 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  var dataList = [
-    Data(item: 'Shoes', price: 599, date: 'Jan 31,2021'),
-    Data(item: 'Mobile', price: 9999, date: 'Feb 01,2021'),
-    Data(item: 'Shirts', price: 400, date: 'Feb 02,2020'),
-    Data(item: 'Books', price: 199, date: 'Feb 03,2020'),
-    Data(item: 'A4 sheets bundle', price: 299, date: 'Feb 04,2020'),
-    Data(item: 'Post covers', price: 100, date: 'Feb 05,2020'),
-    Data(item: 'Prepaid Recharge', price: 719, date: 'Jan 05,2020'),
-  ];
+  Map<String, Map<String, dynamic>> expense = {
+    'Mobile': {'price': 9999, 'date': DateTime(2021, 2, 14)},
+    'Note Books': {'price': 99, 'date': DateTime(2021, 2, 15)},
+    'Stationary items': {'price': 250, 'date': DateTime(2022, 1, 31)},
+    'Bag': {'price': 499, 'date': DateTime(2022, 2, 18)},
+    'Post covers': {'price': 10, 'date': DateTime(2022, 1, 04)},
+    'A4 Sheets': {'price': 249, 'date': DateTime(2022, 1, 23)},
+    'Watch': {'price': 99, 'date': DateTime(2022, 1, 11)},
+    'Shirts': {'price': 412, 'date': DateTime(2022, 1, 21)},
+    'Sun Glass': {'price': 80, 'date': DateTime(2022, 1, 1)}
+  };
 
+  List<String> dropdownOptions = ['entry', 'price', 'date'];
+  String dropdownValue = 'entry';
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: true,
+      debugShowCheckedModeBanner: false,
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Personal Expenses'),
-          backgroundColor: Colors.purple,
-          centerTitle: false,
-          actions: [
-            TextButton.icon(
-              onPressed: () {},
-              icon: const Icon(Icons.add),
-              label: const Text(''),
-              style: TextButton.styleFrom(primary: Colors.white),
+          appBar: AppBar(
+            title: const Text('Personal Expenses'),
+            backgroundColor: Colors.purple,
+            elevation: 0.0,
+            actions: [
+              DropdownButtonHideUnderline(
+                child: DropdownButton(
+                  value: dropdownValue,
+                  items: dropdownOptions.map((value) {
+                    return DropdownMenuItem(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  icon: const Icon(Icons.filter_list_sharp),
+                  onChanged: (String? value) {
+                    setState(() {
+                      dropdownValue = value!;
+                    });
+                  },
+                  iconEnabledColor: Colors.white,
+                ),
+              ),
+            ],
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: () {},
+            backgroundColor: Colors.amber,
+            child: const Icon(
+              Icons.add,
+              color: Colors.black,
             ),
-          ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {},
-          backgroundColor: Colors.amber,
-          child: const Icon(
-            Icons.add,
-            color: Colors.black,
           ),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        body: SingleChildScrollView(
-          child: Column(
-            children: dataList
-                .map(
-                  (data) => CardList(
-                      data: data,
-                      deleteFunction: () {
-                        setState(() {
-                          dataList.remove(data);
-                        });
-                      }),
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerFloat,
+          body: dropdownValue != 'entry'
+              ? Column(
+                  children: [
+                    const BarChart(),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: (expense.keys.toList()
+                                ..sort(
+                                  (k1, k2) => (expense[k1]![dropdownValue])
+                                      .compareTo((expense[k2]![dropdownValue])),
+                                ))
+                              .map(
+                                (key) => ExpenseCard(
+                                  item: key,
+                                  price: expense[key]!['price'],
+                                  date: expense[key]!['date'],
+                                  deleteFunction: () {
+                                    setState(() {
+                                      expense.remove(key);
+                                    });
+                                  },
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ),
+                    ),
+                  ],
                 )
-                .toList(),
-          ),
-        ),
-      ),
+              : Column(
+                  children: [
+                    const BarChart(),
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: expense.keys
+                              .map(
+                                (key) => ExpenseCard(
+                                  item: key,
+                                  price: expense[key]!['price'],
+                                  date: expense[key]!['date'],
+                                  deleteFunction: () {
+                                    setState(() {
+                                      expense.remove(key);
+                                    });
+                                  },
+                                ),
+                              )
+                              .toList(),
+                        ),
+                      ),
+                    ),
+                  ],
+                )),
     );
   }
 }
