@@ -31,12 +31,15 @@ class _HomeState extends State<Home> {
   List<String> dropdownOptions = ['entry', 'name', 'price', 'date'];
   String dropdownValue = 'entry';
   bool _show = false;
-  bool isDateChoosen = false;
+
   bool isTransactionAdded = false;
   String? _dateTime;
   bool isFloatingActionButtonVisible = true;
   TextEditingController title = TextEditingController();
   TextEditingController amount = TextEditingController();
+  bool isValidateTitle = false;
+  bool isValidateAmount = false;
+  bool isDateSelected = true;
 
   Widget? _showBottomSheet() {
     try {
@@ -44,99 +47,125 @@ class _HomeState extends State<Home> {
         return BottomSheet(
           onClosing: () {},
           builder: (context) {
-            return SafeArea(
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height / 2.5,
-                child: Container(
-                  margin: const EdgeInsets.all(10),
-                  padding: const EdgeInsets.all(5),
-                  color: Colors.grey[400],
-                  child: Column(
-                    children: [
-                      TextField(
-                        controller: title,
-                        decoration: const InputDecoration(
-                          labelText: 'Title',
-                          labelStyle: TextStyle(color: Colors.black),
-                        ),
-                        keyboardType: TextInputType.text,
+            return SizedBox(
+              height: MediaQuery.of(context).size.height / 2.3,
+              child: Container(
+                margin: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(5),
+                color: Colors.grey[400],
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    TextField(
+                      controller: title,
+                      decoration: InputDecoration(
+                        labelText: 'Title',
+                        labelStyle: TextStyle(color: Colors.black),
+                        errorText: isValidateTitle ? 'Title is required' : null,
                       ),
-                      const SizedBox(
-                        height: 10,
+                      keyboardType: TextInputType.text,
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    TextField(
+                      controller: amount,
+                      decoration: InputDecoration(
+                        labelText: 'Amount',
+                        labelStyle: const TextStyle(color: Colors.black),
+                        errorText:
+                            isValidateAmount ? 'Amount is required' : null,
                       ),
-                      TextField(
-                        controller: amount,
-                        decoration: const InputDecoration(
-                          labelText: 'Amount',
-                          labelStyle: TextStyle(color: Colors.black),
-                        ),
-                        keyboardType: TextInputType.number,
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(_dateTime == null
-                              ? 'No date Choosen!'
-                              : _dateTime.toString()),
-                          TextButton(
-                            onPressed: () {
-                              showDatePicker(
-                                      context: context,
-                                      initialDate: DateTime.now(),
-                                      firstDate: DateTime(2000),
-                                      lastDate: DateTime(2023))
-                                  .then((date) {
-                                setState(() {
-                                  _dateTime =
-                                      DateFormat('yyyy-MM-dd').format(date!);
-                                });
+                      keyboardType: TextInputType.number,
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(_dateTime == null
+                            ? 'No date Choosen!'
+                            : _dateTime.toString()),
+                        TextButton(
+                          onPressed: () {
+                            showDatePicker(
+                                    context: context,
+                                    initialDate: DateTime.now(),
+                                    firstDate: DateTime(2000),
+                                    lastDate: DateTime(2023))
+                                .then((date) {
+                              setState(() {
+                                _dateTime =
+                                    DateFormat('yyyy-MM-dd').format(date!);
                               });
-                            },
-                            child: const Text(
-                              'Choose Date',
-                              style: TextStyle(
-                                  color: Colors.purple,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          )
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          ElevatedButton.icon(
-                            style: ElevatedButton.styleFrom(
-                                primary: Colors.purple),
-                            onPressed: () {
+                            });
+                          },
+                          child: const Text(
+                            'Choose Date',
+                            style: TextStyle(
+                                color: Colors.purple,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        )
+                      ],
+                    ),
+                    Text(
+                      isDateSelected == false ? 'Date is mandatory!' : '',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                    const SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        ElevatedButton.icon(
+                          style:
+                              ElevatedButton.styleFrom(primary: Colors.purple),
+                          onPressed: () {
+                            setState(() {
+                              title.text.isEmpty
+                                  ? isValidateTitle = true
+                                  : isValidateTitle = false;
+                              amount.text.isEmpty
+                                  ? isValidateAmount = true
+                                  : isValidateAmount = false;
+                              _dateTime == null
+                                  ? isDateSelected = false
+                                  : isDateSelected = true;
+                            });
+                            if (isValidateAmount == false &&
+                                isValidateTitle == false &&
+                                isDateSelected == true) {
+                              expense[title.text] = {
+                                'price': int.parse(amount.text),
+                                'date': _dateTime,
+                              };
+                              title.clear();
+                              amount.clear();
+                              _dateTime = null;
                               setState(() {
                                 isTransactionAdded = !isTransactionAdded;
-
-                                expense[title.text] = {
-                                  'price': int.parse(amount.text),
-                                  'date': _dateTime,
-                                };
-                                title.clear();
-                                amount.clear();
-                                _dateTime = null;
                               });
-                            },
-                            icon: Icon(isTransactionAdded == true
-                                ? Icons.check
-                                : Icons.add),
-                            label: Text(isTransactionAdded == true
-                                ? 'Added Successfully'
-                                : 'Add Transaction'),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                              Future.delayed(Duration(seconds: 3), () {
+                                setState(() {
+                                  isTransactionAdded = !isTransactionAdded;
+                                  _show = false;
+                                });
+                              });
+                            }
+                          },
+                          icon: Icon(isTransactionAdded == true
+                              ? Icons.check
+                              : Icons.add),
+                          label: Text(isTransactionAdded == true
+                              ? 'Added Successfully'
+                              : 'Add Transaction'),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
             );
@@ -214,8 +243,6 @@ class _HomeState extends State<Home> {
               setState(() {
                 isFloatingActionButtonVisible = true;
                 _show = false;
-
-                isDateChoosen = false;
               });
             },
             child: Column(
