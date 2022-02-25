@@ -40,6 +40,7 @@ class _HomeState extends State<Home> {
   bool isValidateTitle = false;
   bool isValidateAmount = false;
   bool isDateSelected = true;
+  bool isDuplicateKeyAvailable = false;
 
   Widget? _showBottomSheet() {
     try {
@@ -64,6 +65,12 @@ class _HomeState extends State<Home> {
                         errorText: isValidateTitle ? 'Title is required' : null,
                       ),
                       keyboardType: TextInputType.text,
+                    ),
+                    Text(
+                      isDuplicateKeyAvailable
+                          ? 'Item name is already taken !'
+                          : '',
+                      style: const TextStyle(color: Colors.red),
                     ),
                     const SizedBox(
                       height: 10,
@@ -134,24 +141,31 @@ class _HomeState extends State<Home> {
                               _dateTime == null
                                   ? isDateSelected = false
                                   : isDateSelected = true;
+                              expense.containsKey(title.text)
+                                  ? isDuplicateKeyAvailable = true
+                                  : isDuplicateKeyAvailable = false;
                             });
+
                             if (isValidateAmount == false &&
                                 isValidateTitle == false &&
-                                isDateSelected == true) {
+                                isDateSelected == true &&
+                                isDuplicateKeyAvailable == false) {
                               expense[title.text] = {
                                 'price': int.parse(amount.text),
                                 'date': _dateTime,
                               };
+
                               title.clear();
                               amount.clear();
                               _dateTime = null;
                               setState(() {
                                 isTransactionAdded = !isTransactionAdded;
                               });
-                              Future.delayed(Duration(seconds: 3), () {
+                              Future.delayed(const Duration(seconds: 1), () {
                                 setState(() {
                                   isTransactionAdded = !isTransactionAdded;
                                   _show = false;
+                                  isFloatingActionButtonVisible = true;
                                 });
                               });
                             }
