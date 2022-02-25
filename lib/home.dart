@@ -12,7 +12,13 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  Map<String, Map<String, dynamic>> expense = {};
+  Map<String, Map<String, dynamic>> expense = {
+    'pen': {
+      'price': 50,
+      'date': DateTime(2020, 1, 1),
+    },
+    'pens': {'price': 50, 'date': DateTime(2020, 1, 1)}
+  };
 
   List<String> getSortedList() {
     if (dropdownValue == 'entry') {
@@ -25,6 +31,51 @@ class _HomeState extends State<Home> {
           (k1, k2) => (expense[k1]![dropdownValue])
               .compareTo((expense[k2]![dropdownValue])),
         );
+    }
+  }
+
+  bool validateAddTransactionButton() {
+    if (title.text.isNotEmpty && amount.text.isNotEmpty && _dateTime != null) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  bool validateClearAllDataButton() {
+    if (title.text.isNotEmpty || amount.text.isNotEmpty || _dateTime != null) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  Widget? dropdown() {
+    if (expense.length > 1) {
+      return DropdownButtonHideUnderline(
+        child: DropdownButton(
+          value: dropdownValue,
+          items: dropdownOptions.map((value) {
+            return DropdownMenuItem(
+              value: value,
+              child: Text(
+                value,
+                style: const TextStyle(color: Colors.white),
+              ),
+            );
+          }).toList(),
+          icon: const Icon(Icons.filter_list_sharp),
+          onChanged: (String? value) {
+            setState(() {
+              dropdownValue = value!;
+            });
+          },
+          iconEnabledColor: Colors.white,
+          dropdownColor: Colors.purple,
+        ),
+      );
+    } else {
+      return Container();
     }
   }
 
@@ -49,11 +100,11 @@ class _HomeState extends State<Home> {
           onClosing: () {},
           builder: (context) {
             return SizedBox(
-              height: MediaQuery.of(context).size.height / 2.3,
+              height: MediaQuery.of(context).size.height / 2,
               child: Container(
                 margin: const EdgeInsets.all(10),
                 padding: const EdgeInsets.all(5),
-                color: Colors.grey[400],
+                color: Colors.purple[100],
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -61,16 +112,24 @@ class _HomeState extends State<Home> {
                       controller: title,
                       decoration: InputDecoration(
                         labelText: 'Title',
-                        labelStyle: TextStyle(color: Colors.black),
+                        labelStyle:
+                            const TextStyle(color: Colors.black, fontSize: 17),
                         errorText: isValidateTitle ? 'Title is required' : null,
                       ),
                       keyboardType: TextInputType.text,
+                      onChanged: (String value) {
+                        setState(() {});
+                      },
                     ),
                     Text(
                       isDuplicateKeyAvailable
                           ? 'Item name is already taken !'
                           : '',
-                      style: const TextStyle(color: Colors.red),
+                      style: const TextStyle(
+                          color: Colors.red,
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1),
                     ),
                     const SizedBox(
                       height: 10,
@@ -79,11 +138,15 @@ class _HomeState extends State<Home> {
                       controller: amount,
                       decoration: InputDecoration(
                         labelText: 'Amount',
-                        labelStyle: const TextStyle(color: Colors.black),
+                        labelStyle:
+                            const TextStyle(color: Colors.black, fontSize: 17),
                         errorText:
                             isValidateAmount ? 'Amount is required' : null,
                       ),
                       keyboardType: TextInputType.number,
+                      onChanged: (String value) {
+                        setState(() {});
+                      },
                     ),
                     const SizedBox(
                       height: 10,
@@ -97,11 +160,21 @@ class _HomeState extends State<Home> {
                         TextButton(
                           onPressed: () {
                             showDatePicker(
-                                    context: context,
-                                    initialDate: DateTime.now(),
-                                    firstDate: DateTime(2000),
-                                    lastDate: DateTime(2023))
-                                .then((date) {
+                                context: context,
+                                initialDate: DateTime.now(),
+                                firstDate: DateTime(2000),
+                                lastDate: DateTime(2023),
+                                builder: (context, child) => Theme(
+                                      data: ThemeData().copyWith(
+                                        colorScheme: const ColorScheme.dark(
+                                          onPrimary: Colors.purple,
+                                          surface: Colors.purple,
+                                          onSurface: Colors.white,
+                                        ),
+                                        dialogBackgroundColor: Colors.purple,
+                                      ),
+                                      child: child!,
+                                    )).then((date) {
                               setState(() {
                                 _dateTime =
                                     DateFormat('yyyy-MM-dd').format(date!);
@@ -119,55 +192,76 @@ class _HomeState extends State<Home> {
                     ),
                     Text(
                       isDateSelected == false ? 'Date is mandatory!' : '',
-                      style: TextStyle(color: Colors.red),
+                      style: const TextStyle(
+                          color: Colors.red,
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1),
                     ),
                     const SizedBox(
                       height: 10,
                     ),
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        validateClearAllDataButton()
+                            ? ElevatedButton.icon(
+                                style: ElevatedButton.styleFrom(
+                                    primary: Colors.purple),
+                                onPressed: () {
+                                  title.clear();
+                                  amount.clear();
+                                  setState(() {
+                                    _dateTime = null;
+                                  });
+                                },
+                                icon: const Icon(Icons.clear),
+                                label: const Text('Clear All Data'))
+                            : Container(),
                         ElevatedButton.icon(
-                          style:
-                              ElevatedButton.styleFrom(primary: Colors.purple),
+                          style: validateAddTransactionButton()
+                              ? ElevatedButton.styleFrom(primary: Colors.purple)
+                              : ElevatedButton.styleFrom(primary: Colors.grey),
                           onPressed: () {
-                            setState(() {
-                              title.text.isEmpty
-                                  ? isValidateTitle = true
-                                  : isValidateTitle = false;
-                              amount.text.isEmpty
-                                  ? isValidateAmount = true
-                                  : isValidateAmount = false;
-                              _dateTime == null
-                                  ? isDateSelected = false
-                                  : isDateSelected = true;
-                              expense.containsKey(title.text)
-                                  ? isDuplicateKeyAvailable = true
-                                  : isDuplicateKeyAvailable = false;
-                            });
-
-                            if (isValidateAmount == false &&
-                                isValidateTitle == false &&
-                                isDateSelected == true &&
-                                isDuplicateKeyAvailable == false) {
-                              expense[title.text] = {
-                                'price': int.parse(amount.text),
-                                'date': _dateTime,
-                              };
-
-                              title.clear();
-                              amount.clear();
-                              _dateTime = null;
+                            if (validateAddTransactionButton() == true) {
                               setState(() {
-                                isTransactionAdded = !isTransactionAdded;
+                                title.text.isEmpty
+                                    ? isValidateTitle = true
+                                    : isValidateTitle = false;
+                                amount.text.isEmpty
+                                    ? isValidateAmount = true
+                                    : isValidateAmount = false;
+                                _dateTime == null
+                                    ? isDateSelected = false
+                                    : isDateSelected = true;
+                                expense.containsKey(title.text)
+                                    ? isDuplicateKeyAvailable = true
+                                    : isDuplicateKeyAvailable = false;
                               });
-                              Future.delayed(const Duration(seconds: 1), () {
+
+                              if (isValidateAmount == false &&
+                                  isValidateTitle == false &&
+                                  isDateSelected == true &&
+                                  isDuplicateKeyAvailable == false) {
+                                expense[title.text] = {
+                                  'price': int.parse(amount.text),
+                                  'date': _dateTime,
+                                };
+
+                                title.clear();
+                                amount.clear();
+                                _dateTime = null;
                                 setState(() {
                                   isTransactionAdded = !isTransactionAdded;
-                                  _show = false;
-                                  isFloatingActionButtonVisible = true;
                                 });
-                              });
+                                Future.delayed(const Duration(seconds: 1), () {
+                                  setState(() {
+                                    isTransactionAdded = !isTransactionAdded;
+                                    _show = false;
+                                    isFloatingActionButtonVisible = true;
+                                  });
+                                });
+                              }
                             }
                           },
                           icon: Icon(isTransactionAdded == true
@@ -204,28 +298,7 @@ class _HomeState extends State<Home> {
             backgroundColor: Colors.purple,
             elevation: 0.0,
             actions: [
-              DropdownButtonHideUnderline(
-                child: DropdownButton(
-                  value: dropdownValue,
-                  items: dropdownOptions.map((value) {
-                    return DropdownMenuItem(
-                      value: value,
-                      child: Text(
-                        value,
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                    );
-                  }).toList(),
-                  icon: const Icon(Icons.filter_list_sharp),
-                  onChanged: (String? value) {
-                    setState(() {
-                      dropdownValue = value!;
-                    });
-                  },
-                  iconEnabledColor: Colors.white,
-                  dropdownColor: Colors.purple,
-                ),
-              ),
+              dropdown()!,
               IconButton(
                 onPressed: () {
                   setState(() {

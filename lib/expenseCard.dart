@@ -40,7 +40,44 @@ class ExpenseCard extends StatelessWidget {
             ),
           ),
           trailing: IconButton(
-            onPressed: deleteFunction,
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (_) => AlertDialog(
+                  title: const Text(
+                    'Are you sure?',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  content: const Text(
+                    'Do you want to delete?',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                  actions: [
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.purple[300],
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text('No'),
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        primary: Colors.purple[300],
+                      ),
+                      onPressed: () {
+                        deleteFunction();
+                        Navigator.pop(context);
+                      },
+                      child: const Text('Yes'),
+                    ),
+                  ],
+                  elevation: 24.0,
+                  backgroundColor: Colors.purple,
+                ),
+              );
+            },
             icon: const Icon(Icons.delete),
             color: Colors.red,
           ),
