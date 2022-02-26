@@ -12,13 +12,7 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  Map<String, Map<String, dynamic>> expense = {
-    'pen': {
-      'price': 50,
-      'date': DateTime(2020, 1, 1),
-    },
-    'pens': {'price': 50, 'date': DateTime(2020, 1, 1)}
-  };
+  Map<String, Map<String, dynamic>> expense = {};
 
   List<String> getSortedList() {
     if (dropdownValue == 'entry') {
@@ -82,15 +76,12 @@ class _HomeState extends State<Home> {
   List<String> dropdownOptions = ['entry', 'name', 'price', 'date'];
   String dropdownValue = 'entry';
   bool _show = false;
-
   bool isTransactionAdded = false;
   String? _dateTime;
   bool isFloatingActionButtonVisible = true;
   TextEditingController title = TextEditingController();
   TextEditingController amount = TextEditingController();
-  bool isValidateTitle = false;
-  bool isValidateAmount = false;
-  bool isDateSelected = true;
+
   bool isDuplicateKeyAvailable = false;
 
   Widget? _showBottomSheet() {
@@ -100,7 +91,7 @@ class _HomeState extends State<Home> {
           onClosing: () {},
           builder: (context) {
             return SizedBox(
-              height: MediaQuery.of(context).size.height / 2,
+              height: MediaQuery.of(context).size.height / 2.5,
               child: Container(
                 margin: const EdgeInsets.all(10),
                 padding: const EdgeInsets.all(5),
@@ -110,11 +101,10 @@ class _HomeState extends State<Home> {
                   children: [
                     TextField(
                       controller: title,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Title',
                         labelStyle:
-                            const TextStyle(color: Colors.black, fontSize: 17),
-                        errorText: isValidateTitle ? 'Title is required' : null,
+                            TextStyle(color: Colors.black, fontSize: 17),
                       ),
                       keyboardType: TextInputType.text,
                       onChanged: (String value) {
@@ -136,12 +126,10 @@ class _HomeState extends State<Home> {
                     ),
                     TextField(
                       controller: amount,
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                         labelText: 'Amount',
                         labelStyle:
-                            const TextStyle(color: Colors.black, fontSize: 17),
-                        errorText:
-                            isValidateAmount ? 'Amount is required' : null,
+                            TextStyle(color: Colors.black, fontSize: 17),
                       ),
                       keyboardType: TextInputType.number,
                       onChanged: (String value) {
@@ -165,13 +153,9 @@ class _HomeState extends State<Home> {
                                 firstDate: DateTime(2000),
                                 lastDate: DateTime(2023),
                                 builder: (context, child) => Theme(
-                                      data: ThemeData().copyWith(
-                                        colorScheme: const ColorScheme.dark(
-                                          onPrimary: Colors.purple,
-                                          surface: Colors.purple,
-                                          onSurface: Colors.white,
-                                        ),
-                                        dialogBackgroundColor: Colors.purple,
+                                      data: ThemeData(
+                                        primarySwatch: Colors.purple,
+                                        primaryColor: Colors.purple,
                                       ),
                                       child: child!,
                                     )).then((date) {
@@ -189,14 +173,6 @@ class _HomeState extends State<Home> {
                           ),
                         )
                       ],
-                    ),
-                    Text(
-                      isDateSelected == false ? 'Date is mandatory!' : '',
-                      style: const TextStyle(
-                          color: Colors.red,
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1),
                     ),
                     const SizedBox(
                       height: 10,
@@ -225,25 +201,13 @@ class _HomeState extends State<Home> {
                           onPressed: () {
                             if (validateAddTransactionButton() == true) {
                               setState(() {
-                                title.text.isEmpty
-                                    ? isValidateTitle = true
-                                    : isValidateTitle = false;
-                                amount.text.isEmpty
-                                    ? isValidateAmount = true
-                                    : isValidateAmount = false;
-                                _dateTime == null
-                                    ? isDateSelected = false
-                                    : isDateSelected = true;
                                 expense.containsKey(title.text)
                                     ? isDuplicateKeyAvailable = true
                                     : isDuplicateKeyAvailable = false;
                               });
 
-                              if (isValidateAmount == false &&
-                                  isValidateTitle == false &&
-                                  isDateSelected == true &&
-                                  isDuplicateKeyAvailable == false) {
-                                expense[title.text] = {
+                              if (isDuplicateKeyAvailable == false) {
+                                expense[title.text.toLowerCase()] = {
                                   'price': int.parse(amount.text),
                                   'date': _dateTime,
                                 };
