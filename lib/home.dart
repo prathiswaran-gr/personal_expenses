@@ -14,6 +14,21 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   Map<String, Map<String, dynamic>> expense = {};
 
+  Iterable<Map<String, Object>> get recentTransactions {
+    return List.generate(7, (index) {
+      final weekDay = DateTime.now().subtract(Duration(days: index));
+      double totalAmount = 0.0;
+      expense.forEach((key, value) {
+        if (expense[key]!['date'].year == weekDay.year &&
+            expense[key]!['date'].month == weekDay.month &&
+            expense[key]!['date'].day == weekDay.day) {
+          totalAmount += expense[key]!['price'];
+        }
+      });
+      return {'date': DateFormat.E().format(weekDay), 'amount': totalAmount};
+    }).toList().reversed;
+  }
+
   List<String> getSortedList() {
     if (dropdownValue == 'entry') {
       return expense.keys.toList();
@@ -91,7 +106,7 @@ class _HomeState extends State<Home> {
           onClosing: () {},
           builder: (context) {
             return SizedBox(
-              height: MediaQuery.of(context).size.height / 2.5,
+              height: MediaQuery.of(context).size.height / 2.3,
               child: Container(
                 margin: const EdgeInsets.all(10),
                 padding: const EdgeInsets.all(5),
@@ -151,7 +166,7 @@ class _HomeState extends State<Home> {
                                 context: context,
                                 initialDate: DateTime.now(),
                                 firstDate: DateTime(2000),
-                                lastDate: DateTime(2023),
+                                lastDate: DateTime.now(),
                                 builder: (context, child) => Theme(
                                       data: ThemeData(
                                         primarySwatch: Colors.purple,
@@ -255,75 +270,72 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: GestureDetector(
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Text('Personal Expenses'),
-            backgroundColor: Colors.purple,
-            elevation: 0.0,
-            actions: [
-              dropdown()!,
-              IconButton(
-                onPressed: () {
-                  setState(() {
-                    _show = true;
-                    isFloatingActionButtonVisible = false;
-                  });
-                },
-                icon: const Icon(Icons.add),
-              ),
-            ],
-          ),
-          floatingActionButton: Visibility(
-            visible: isFloatingActionButtonVisible,
-            child: FloatingActionButton(
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Personal Expenses'),
+          backgroundColor: Colors.purple,
+          elevation: 0.0,
+          actions: [
+            dropdown()!,
+            IconButton(
               onPressed: () {
                 setState(() {
                   _show = true;
                   isFloatingActionButtonVisible = false;
                 });
               },
-              backgroundColor: Colors.purple,
-              child: const Icon(Icons.add),
+              icon: const Icon(Icons.add),
             ),
-          ),
-          floatingActionButtonLocation:
-              FloatingActionButtonLocation.centerFloat,
-          body: GestureDetector(
-            onTap: () {
+          ],
+        ),
+        floatingActionButton: Visibility(
+          visible: isFloatingActionButtonVisible,
+          child: FloatingActionButton(
+            onPressed: () {
               setState(() {
-                isFloatingActionButtonVisible = true;
-                _show = false;
+                _show = true;
+                isFloatingActionButtonVisible = false;
               });
             },
-            child: Column(
-              children: [
-                const BarChart(),
-                Expanded(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: getSortedList()
-                          .map(
-                            (key) => ExpenseCard(
-                              item: key,
-                              price: expense[key]!['price'],
-                              date: expense[key]!['date'],
-                              deleteFunction: () {
-                                setState(() {
-                                  expense.remove(key);
-                                });
-                              },
-                            ),
-                          )
-                          .toList(),
-                    ),
+            backgroundColor: Colors.purple,
+            child: const Icon(Icons.add),
+          ),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        body: GestureDetector(
+          onTap: () {
+            setState(() {
+              isFloatingActionButtonVisible = true;
+              _show = false;
+            });
+          },
+          child: Column(
+            children: [
+              BarChart(recentTransactions),
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: getSortedList()
+                        .map(
+                          (key) => ExpenseCard(
+                            item: key,
+                            price: expense[key]!['price'],
+                            date: expense[key]!['date'],
+                            deleteFunction: () {
+                              setState(() {
+                                expense.remove(key);
+                              });
+                            },
+                          ),
+                        )
+                        .toList(),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-          bottomSheet: _showBottomSheet(),
         ),
+        bottomSheet: _showBottomSheet(),
       ),
     );
   }
