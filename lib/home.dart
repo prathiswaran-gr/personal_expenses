@@ -19,13 +19,16 @@ class _HomeState extends State<Home> {
       final weekDay = DateTime.now().subtract(Duration(days: index));
       double totalAmount = 0.0;
       expense.forEach((key, value) {
-        if (expense[key]!['date'].year == weekDay.year &&
-            expense[key]!['date'].month == weekDay.month &&
-            expense[key]!['date'].day == weekDay.day) {
+        if ((DateTime.parse(expense[key]!['date'].toString()).year ==
+                weekDay.year &&
+            (DateTime.parse(expense[key]!['date'].toString()).month ==
+                weekDay.month) &&
+            (DateTime.parse(expense[key]!['date'].toString()).day ==
+                weekDay.day))) {
           totalAmount += expense[key]!['price'];
         }
       });
-      return {'date': DateFormat.E().format(weekDay), 'amount': totalAmount};
+      return {'date': DateFormat.E().format(weekDay) , 'amount': totalAmount};
     }).toList().reversed;
   }
 
@@ -264,6 +267,7 @@ class _HomeState extends State<Home> {
     } catch (e) {
       print('Exception occurs:$e');
     }
+    return null;
   }
 
   @override

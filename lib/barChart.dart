@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'chartBar.dart';
 
 class BarChart extends StatelessWidget {
-  final dynamic recentTransactions;
+  final Iterable<Map<String, dynamic>> recentTransactions;
   BarChart(this.recentTransactions);
 
   double get totalSpending {
@@ -32,6 +32,7 @@ class BarChart extends StatelessWidget {
                     : (data['amount'] as double) / totalSpending,
               ),
             );
+            // return Text('text') as Widget;
           }).toList(),
         ),
       ),

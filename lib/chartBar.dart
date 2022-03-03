@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class Chart extends StatelessWidget {
@@ -17,7 +16,7 @@ class Chart extends StatelessWidget {
         Container(
           height: 20,
           child: FittedBox(
-            child: Text('\$${spendingAmount}'),
+            child: Text('\₹${spendingAmount}'),
           ),
         ),
         SizedBox(
@@ -39,7 +38,7 @@ class Chart extends StatelessWidget {
                 heightFactor: spendingPctOfTotal,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Theme.of(context).primaryColor,
+                    color: Colors.purple,
                     borderRadius: BorderRadius.circular(10),
                   ),
                 ),
